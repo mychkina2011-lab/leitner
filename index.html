@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#243b53">
+<title>La petite fabrique des révisions</title>
+<style>
+:root{--ink:#243b53;--muted:#62758a;--paper:#fbf8f1;--card:#fffefa;--line:#e7e1d6;--teal:#1f827a;--teal-light:#e2f3ef;--coral:#dd705d;--coral-light:#fff0eb;--gold:#e8b84d;--shadow:0 12px 32px rgba(36,59,83,.09)}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 ui-rounded,"Avenir Next",Avenir,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #7bb9e3;outline-offset:2px}
+.wrap{max-width:1020px;margin:0 auto;padding:24px 18px 48px}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:var(--ink);color:white;display:grid;place-items:center;font-weight:900;font-size:21px;box-shadow:3px 3px 0 var(--gold)}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--teal)}h1{font-size:clamp(28px,5vw,42px);line-height:1.08;margin:0;letter-spacing:-.04em}h2{font-size:23px;letter-spacing:-.025em;margin:0 0 8px}h3{font-size:17px;margin:0 0 8px}.subtitle{margin:9px 0 0;color:var(--muted);max-width:630px}.save-pill{background:white;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted);white-space:nowrap}
+.hero{background:#f1eadc;border-radius:24px;padding:24px 25px;display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px;position:relative;overflow:hidden}.hero p{margin:8px 0 0;max-width:640px;color:#526479}.hero-doodle{font-size:54px;transform:rotate(-8deg);flex-shrink:0}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:14px 18px;text-align:left;font-weight:800;display:flex;align-items:center;gap:12px;box-shadow:0 2px 0 rgba(36,59,83,.02)}.tab .emoji{font-size:25px}.tab small{display:block;font-weight:500;color:var(--muted);margin-top:1px}.tab.active{border:2px solid var(--teal);background:var(--teal-light);padding:13px 17px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);margin:14px 0}.panel-head{display:flex;justify-content:space-between;align-items:start;gap:14px;margin-bottom:18px}.section-note{color:var(--muted);font-size:14px;margin:4px 0 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat{border:1px solid var(--line);background:#fff;border-radius:15px;padding:12px 14px}.stat strong{font-size:24px;display:block;line-height:1.2}.stat span{font-size:12px;color:var(--muted)}
+.boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.box-level{border-radius:16px;padding:14px 15px;border:1px solid var(--line);background:#fff}.box-level:nth-child(1){border-top:4px solid var(--coral)}.box-level:nth-child(2){border-top:4px solid var(--gold)}.box-level:nth-child(3){border-top:4px solid var(--teal)}.box-level strong{display:block;font-size:22px}.box-level span{font-size:12px;color:var(--muted)}.box-level p{font-size:12px;color:var(--muted);margin:5px 0 0}
+.settings{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin:16px 0}.settings-label{font-size:13px;font-weight:800;display:block;margin-bottom:7px}.table-picks{display:flex;flex-wrap:wrap;gap:6px}.pick{position:relative}.pick input{position:absolute;opacity:0;pointer-events:none}.pick span{display:grid;place-items:center;min-width:36px;height:36px;padding:0 8px;border:1px solid var(--line);border-radius:10px;background:white;font-weight:750;font-size:14px}.pick input:checked+span{background:var(--teal-light);border-color:var(--teal);color:#145e58}.pick input:focus-visible+span{outline:3px solid #7bb9e3}.select{border:1px solid var(--line);border-radius:10px;background:white;padding:9px 11px;color:var(--ink)}.primary,.secondary,.quiet{border:0;border-radius:12px;padding:12px 17px;font-weight:800}.primary{background:var(--teal);color:white;box-shadow:0 3px 0 #145e58}.primary:hover{background:#176e67}.secondary{background:var(--ink);color:white}.quiet{background:transparent;border:1px solid var(--line);color:var(--ink)}.primary:disabled{opacity:.45;cursor:not-allowed}.start-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px}.hint{font-size:12px;color:var(--muted);margin:0}
+.hidden{display:none!important}.session-card{max-width:660px;margin:10px auto}.session-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.progress-track{height:7px;border-radius:999px;background:#eee8df;overflow:hidden;margin:12px 0 20px}.progress-fill{height:100%;width:0;background:var(--teal);border-radius:999px;transition:width .25s}.question{border:1px solid var(--line);background:#fff;border-radius:21px;text-align:center;padding:clamp(22px,5vw,38px) 18px;margin:14px 0 16px}.q-tag{display:inline-block;background:var(--teal-light);color:#145e58;border-radius:999px;padding:5px 10px;font-weight:800;font-size:12px;margin-bottom:15px}.q-text{font-size:clamp(33px,7vw,52px);line-height:1.15;letter-spacing:-.04em;font-weight:850;margin:0 0 8px;overflow-wrap:anywhere}.q-sub{color:var(--muted);margin:0;font-size:15px}.answer-row{display:flex;gap:8px}.answer-row input{min-width:0;flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px 14px;font-size:18px;color:var(--ink)}.feedback{border-radius:14px;padding:13px 15px;margin:13px 0;font-weight:700}.feedback.good{background:var(--teal-light);color:#145e58}.feedback.bad{background:var(--coral-light);color:#913f32}.session-actions{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.muted{color:var(--muted)}.end{text-align:center;padding:26px}.end .big{font-size:55px}.end p{color:var(--muted)}.badge{background:#f1eadc;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.footer{margin:26px 0 0;padding:0 4px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer button{font-size:12px;padding:7px 10px}.data-actions{display:flex;gap:7px;flex-wrap:wrap}.small-link{border:0;background:none;color:var(--teal);text-decoration:underline;padding:0;font-weight:700}.notice{font-size:13px;background:#fff7dc;border:1px solid #f1dfa1;border-radius:12px;padding:11px 13px;color:#65511c;margin-top:12px}
+@media(max-width:620px){.wrap{padding:16px 12px 32px}.topline{align-items:flex-start}.save-pill{font-size:11px;padding:7px 9px}.hero{padding:19px;border-radius:19px}.hero-doodle{font-size:40px}.tabs{gap:7px}.tab{padding:11px 9px;gap:8px;font-size:14px}.tab.active{padding:10px 8px}.tab .emoji{font-size:21px}.panel{padding:17px;border-radius:18px}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:21px}.boxes{gap:6px}.box-level{padding:11px 9px}.box-level strong{font-size:20px}.box-level p{font-size:11px}.answer-row{flex-direction:column}.answer-row button{width:100%}.session-top{align-items:start}.q-text{font-size:39px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topline">
+    <div class="brand"><div class="logo">R</div><div><div class="eyebrow">Un peu chaque jour</div><h1>La petite fabrique<br>des révisions</h1></div></div>
+    <div class="save-pill" title="Les progrès sont enregistrés dans ce navigateur">● Sauvegarde locale</div>
+  </header>
+  <section class="hero"><div><h2>Les petites révisions font les grandes réussites !</h2><p>Choisis une matière, réponds aux questions et fais avancer tes cartes dans les trois boîtes. Les cartes difficiles reviennent plus souvent.</p></div><div class="hero-doodle" aria-hidden="true">✏️📚</div></section>
+
+  <nav class="tabs" aria-label="Choisir une matière">
+    <button class="tab active" data-subject="multiplications" type="button"><span class="emoji">✖️</span><span>Multiplications<small>Les tables de 1 à 12</small></span></button>
+    <button class="tab" data-subject="conjugaison" type="button"><span class="emoji">📝</span><span>Conjugaison<small>Les verbes au présent</small></span></button>
+  </nav>
+
+  <main>
+    <section id="homePanel" class="panel">
+      <div class="panel-head"><div><h2 id="subjectHeading">Les multiplications</h2><p class="section-note" id="subjectDescription">Entraîne-toi sur les tables que tu choisis.</p></div><span class="badge" id="sessionBadge">Séance à venir</span></div>
+      <div class="stats">
+        <div class="stat"><strong id="totalCount">108</strong><span>cartes dans cette matière</span></div>
+        <div class="stat"><strong id="masteredCount">0</strong><span>cartes dans la boîte 3</span></div>
+        <div class="stat"><strong id="sessionCount">0</strong><span>séances terminées</span></div>
+      </div>
+      <h3>Ta boîte de Leitner</h3>
+      <div class="boxes">
+        <div class="box-level"><span>BOÎTE 1 · À apprendre</span><strong id="box1Count">108</strong><p>Revue à chaque séance</p></div>
+        <div class="box-level"><span>BOÎTE 2 · En progrès</span><strong id="box2Count">0</strong><p>Revue une séance sur deux</p></div>
+        <div class="box-level"><span>BOÎTE 3 · Bien acquis</span><strong id="box3Count">0</strong><p>Revue une séance sur trois</p></div>
+      </div>
+      <div id="mulSettings">
+        <div class="settings"><div style="width:100%"><span class="settings-label">Quelles tables veux-tu réviser ?</span><div class="table-picks" id="tablePicks"></div></div></div>
+      </div>
+      <div class="settings"><div><label class="settings-label" for="questionCount">Questions par séance</label><select id="questionCount" class="select"><option value="5">5 questions</option><option value="10" selected>10 questions</option><option value="15">15 questions</option><option value="20">20 questions</option></select></div></div>
+      <div class="start-row"><button id="startBtn" class="primary" type="button">Commencer une séance →</button><p class="hint" id="dueHint">Les cartes à revoir sont choisies automatiquement.</p></div>
+      <div class="notice">Astuce : une bonne réponse fait monter la carte d'une boîte. Une erreur la ramène dans la boîte 1 pour la retravailler.</div>
+    </section>
+
+    <section id="sessionPanel" class="panel hidden" aria-live="polite">
+      <div class="session-card">
+        <div class="session-top"><div><div class="eyebrow" id="sessionSubject">Multiplications</div><h2 id="sessionTitle">À toi de jouer !</h2></div><span class="badge" id="questionCounter">Question 1 / 10</span></div>
+        <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+        <div class="question"><span class="q-tag" id="questionTag">BOÎTE 1</span><p class="q-text" id="questionText">7 × 8 = ?</p><p class="q-sub" id="questionSub">Écris le résultat.</p></div>
+        <form id="answerForm" class="answer-row"><input id="answerInput" type="text" autocomplete="off" autocapitalize="none" placeholder="Ta réponse…" aria-label="Ta réponse" required><button class="primary" id="checkBtn" type="submit">Vérifier</button></form>
+        <div id="feedback" class="feedback hidden" role="status"></div>
+        <div class="session-actions"><button id="quitBtn" class="quiet" type="button">Quitter la séance</button><button id="nextBtn" class="primary hidden" type="button">Question suivante →</button></div>
+      </div>
+    </section>
+    <section id="endPanel" class="panel hidden" aria-live="polite"><div class="end"><div class="big" id="endEmoji">🎉</div><h2 id="endTitle">Bravo ! Séance terminée.</h2><p id="endText">Tu as répondu à toutes les questions.</p><div class="stats" style="max-width:450px;margin:20px auto"><div class="stat"><strong id="scoreGood">0</strong><span>bonnes réponses</span></div><div class="stat"><strong id="scoreWrong">0</strong><span>à retravailler</span></div><div class="stat"><strong id="scoreRate">0 %</strong><span>de réussite</span></div></div><button class="primary" id="backBtn" type="button">Retour aux boîtes</button></div></section>
+  </main>
+  <footer class="footer"><span>Fabriqué pour apprendre tranquillement, à son rythme 💛</span><div class="data-actions"><button class="quiet" id="exportBtn" type="button">Exporter ma sauvegarde</button><button class="quiet" id="importBtn" type="button">Importer</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"><button class="quiet" id="resetBtn" type="button">Recommencer à zéro</button></div></footer>
+  <p class="hint" style="margin-top:12px">Les progrès restent dans le navigateur de cet appareil. Pour les retrouver sur un autre appareil, exporte la sauvegarde ici, puis importe le fichier sur l'autre appareil.</p>
+</div>
+<script>
+(() => {
+  const STORAGE_KEY = 'petiteFabriqueLeitnerV1';
+  const people = ['je','tu','il / elle / on','nous','vous','ils / elles'];
+  // Chaque forme peut contenir plusieurs réponses acceptées, séparées par |.
+  const verbs = [
+    // 1er groupe
+    ['aimer','1er groupe',['aime','aimes','aime','aimons','aimez','aiment']],
+    ['parler','1er groupe',['parle','parles','parle','parlons','parlez','parlent']],
+    ['chanter','1er groupe',['chante','chantes','chante','chantons','chantez','chantent']],
+    ['jouer','1er groupe',['joue','joues','joue','jouons','jouez','jouent']],
+    ['regarder','1er groupe',['regarde','regardes','regarde','regardons','regardez','regardent']],
+    ['écouter','1er groupe',['écoute','écoutes','écoute','écoutons','écoutez','écoutent']],
+    ['marcher','1er groupe',['marche','marches','marche','marchons','marchez','marchent']],
+    ['danser','1er groupe',['danse','danses','danse','dansons','dansez','dansent']],
+    ['travailler','1er groupe',['travaille','travailles','travaille','travaillons','travaillez','travaillent']],
+    ['chercher','1er groupe',['cherche','cherches','cherche','cherchons','cherchez','cherchent']],
+    ['trouver','1er groupe',['trouve','trouves','trouve','trouvons','trouvez','trouvent']],
+    ['penser','1er groupe',['pense','penses','pense','pensons','pensez','pensent']],
+    ['donner','1er groupe',['donne','donnes','donne','donnons','donnez','donnent']],
+    ['demander','1er groupe',['demande','demandes','demande','demandons','demandez','demandent']],
+    ['habiter','1er groupe',['habite','habites','habite','habitons','habitez','habitent']],
+    ['dessiner','1er groupe',['dessine','dessines','dessine','dessinons','dessinez','dessinent']],
+    ['cuisiner','1er groupe',['cuisine','cuisines','cuisine','cuisinons','cuisinez','cuisinent']],
+    ['manger','1er groupe',['mange','manges','mange','mangeons','mangez','mangent']],
+    ['commencer','1er groupe',['commence','commences','commence','commençons','commencez','commencent']],
+    ['acheter','1er groupe',['achète','achètes','achète','achetons','achetez','achètent']],
+    ['appeler','1er groupe',['appelle','appelles','appelle','appelons','appelez','appellent']],
+    ['préférer','1er groupe',['préfère','préfères','préfère','préférons','préférez','préfèrent']],
+    ['envoyer','1er groupe',['envoie','envoies','envoie','envoyons','envoyez','envoient']],
+    ['nettoyer','1er groupe',['nettoie','nettoies','nettoie','nettoyons','nettoyez','nettoient']],
+    ['payer','1er groupe',['paie|paye','paies|payes','paie|paye','payons','payez','paient|payent']],
+    // 2e groupe
+    ['finir','2e groupe',['finis','finis','finit','finissons','finissez','finissent']],
+    ['choisir','2e groupe',['choisis','choisis','choisit','choisissons','choisissez','choisissent']],
+    ['réussir','2e groupe',['réussis','réussis','réussit','réussissons','réussissez','réussissent']],
+    ['grandir','2e groupe',['grandis','grandis','grandit','grandissons','grandissez','grandissent']],
+    ['remplir','2e groupe',['remplis','remplis','remplit','remplissons','remplissez','remplissent']],
+    ['réfléchir','2e groupe',['réfléchis','réfléchis','réfléchit','réfléchissons','réfléchissez','réfléchissent']],
+    ['grossir','2e groupe',['grossis','grossis','grossit','grossissons','grossissez','grossissent']],
+    ['rougir','2e groupe',['rougis','rougis','rougit','rougissons','rougissez','rougissent']],
+    ['obéir','2e groupe',['obéis','obéis','obéit','obéissons','obéissez','obéissent']],
+    ['punir','2e groupe',['punis','punis','punit','punissons','punissez','punissent']],
+    ['applaudir','2e groupe',['applaudis','applaudis','applaudit','applaudissons','applaudissez','applaudissent']],
+    // 3e groupe et principaux irréguliers
+    ['être','3e groupe / irrégulier',['suis','es','est','sommes','êtes','sont']],
+    ['avoir','3e groupe / irrégulier',['ai','as','a','avons','avez','ont']],
+    ['aller','3e groupe / irrégulier',['vais','vas','va','allons','allez','vont']],
+    ['faire','3e groupe / irrégulier',['fais','fais','fait','faisons','faites','font']],
+    ['dire','3e groupe / irrégulier',['dis','dis','dit','disons','dites','disent']],
+    ['pouvoir','3e groupe / irrégulier',['peux|puis','peux','peut','pouvons','pouvez','peuvent']],
+    ['vouloir','3e groupe / irrégulier',['veux','veux','veut','voulons','voulez','veulent']],
+    ['devoir','3e groupe / irrégulier',['dois','dois','doit','devons','devez','doivent']],
+    ['savoir','3e groupe / irrégulier',['sais','sais','sait','savons','savez','savent']],
+    ['voir','3e groupe / irrégulier',['vois','vois','voit','voyons','voyez','voient']],
+    ['venir','3e groupe / irrégulier',['viens','viens','vient','venons','venez','viennent']],
+    ['tenir','3e groupe / irrégulier',['tiens','tiens','tient','tenons','tenez','tiennent']],
+    ['prendre','3e groupe / irrégulier',['prends','prends','prend','prenons','prenez','prennent']],
+    ['apprendre','3e groupe / irrégulier',['apprends','apprends','apprend','apprenons','apprenez','apprennent']],
+    ['comprendre','3e groupe / irrégulier',['comprends','comprends','comprend','comprenons','comprenez','comprennent']],
+    ['mettre','3e groupe / irrégulier',['mets','mets','met','mettons','mettez','mettent']],
+    ['lire','3e groupe / irrégulier',['lis','lis','lit','lisons','lisez','lisent']],
+    ['écrire','3e groupe / irrégulier',['écris','écris','écrit','écrivons','écrivez','écrivent']],
+    ['boire','3e groupe / irrégulier',['bois','bois','boit','buvons','buvez','boivent']],
+    ['croire','3e groupe / irrégulier',['crois','crois','croit','croyons','croyez','croient']],
+    ['connaître','3e groupe / irrégulier',['connais','connais','connaît','connaissons','connaissez','connaissent']],
+    ['partir','3e groupe / irrégulier',['pars','pars','part','partons','partez','partent']],
+    ['sortir','3e groupe / irrégulier',['sors','sors','sort','sortons','sortez','sortent']],
+    ['dormir','3e groupe / irrégulier',['dors','dors','dort','dormons','dormez','dorment']],
+    ['servir','3e groupe / irrégulier',['sers','sers','sert','servons','servez','servent']],
+    ['sentir','3e groupe / irrégulier',['sens','sens','sent','sentons','sentez','sentent']],
+    ['courir','3e groupe / irrégulier',['cours','cours','court','courons','courez','courent']],
+    ['recevoir','3e groupe / irrégulier',['reçois','reçois','reçoit','recevons','recevez','reçoivent']],
+    ['ouvrir','3e groupe / irrégulier',['ouvre','ouvres','ouvre','ouvrons','ouvrez','ouvrent']],
+    ['offrir','3e groupe / irrégulier',['offre','offres','offre','offrons','offrez','offrent']],
+    ['vivre','3e groupe / irrégulier',['vis','vis','vit','vivons','vivez','vivent']],
+    ['suivre','3e groupe / irrégulier',['suis','suis','suit','suivons','suivez','suivent']],
+    ['attendre','3e groupe / irrégulier',['attends','attends','attend','attendons','attendez','attendent']],
+    ['répondre','3e groupe / irrégulier',['réponds','réponds','répond','répondons','répondez','répondent']],
+    ['vendre','3e groupe / irrégulier',['vends','vends','vend','vendons','vendez','vendent']],
+    ['perdre','3e groupe / irrégulier',['perds','perds','perd','perdons','perdez','perdent']],
+    ['rire','3e groupe / irrégulier',['ris','ris','rit','rions','riez','rient']],
+    ['sourire','3e groupe / irrégulier',['souris','souris','sourit','sourions','souriez','sourient']],
+    ['éteindre','3e groupe / irrégulier',['éteins','éteins','éteint','éteignons','éteignez','éteignent']],
+    ['construire','3e groupe / irrégulier',['construis','construis','construit','construisons','construisez','construisent']],
+    ['craindre','3e groupe / irrégulier',['crains','crains','craint','craignons','craignez','craignent']],
+    ['fuir','3e groupe / irrégulier',['fuis','fuis','fuit','fuyons','fuyez','fuient']],
+    ['cueillir','3e groupe / irrégulier',['cueille','cueilles','cueille','cueillons','cueillez','cueillent']],
+    ['battre','3e groupe / irrégulier',['bats','bats','bat','battons','battez','battent']]
+  ];
+  const defaultState = () => ({version:1, multiplication:{progress:{},sessions:0}, conjugaison:{progress:{},sessions:0}});
+  let state = loadState();
+  let subject = 'multiplications';
+  let session = null;
+  let sessionIndex = 0;
+  let currentAnswered = false;
+  let currentResult = null;
+  let pendingScore = {good:0,wrong:0};
+  const $ = id => document.getElementById(id);
+
+  function loadState(){ try { const v=JSON.parse(localStorage.getItem(STORAGE_KEY)); if(v && v.version===1) return {...defaultState(),...v,multiplication:{...defaultState().multiplication,...v.multiplication},conjugaison:{...defaultState().conjugaison,...v.conjugaison}}; } catch(e){} return defaultState(); }
+  function saveState(){ try { localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); } catch(e){ alert('Impossible d’enregistrer les progrès dans ce navigateur. Pense à exporter une sauvegarde.'); } }
+  function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+  function tableSelection(){ return [...document.querySelectorAll('input[name="table"]:checked')].map(x=>Number(x.value)); }
+  function allCards(which){
+    if(which==='multiplications'){ const selected=tableSelection(); const cards=[]; selected.forEach(a=>{for(let b=1;b<=12;b++){const id=`${a}x${b}`;cards.push({id,kind:'mul',a,b,answer:String(a*b),answers:[String(a*b)],prompt:`${a} × ${b} = ?`,sub:'Écris le résultat du calcul.'});}}); return cards; }
+    return verbs.flatMap((v,vi)=>v[2].map((forms,pi)=>{const answers=forms.split('|');return {id:`${vi}:${pi}`,kind:'verb',verb:v[0],group:v[1],person:people[pi],answer:answers[0],answers,prompt:v[0],sub:`Conjugue au présent avec « ${people[pi]} ». Écris seulement la forme du verbe.`};}));
+  }
+  function stageOf(which,id){ return Math.max(1,Math.min(3,Number(state[which].progress[id]||1))); }
+  function counts(which){ const cards=allCards(which); const c=[0,0,0]; cards.forEach(x=>c[stageOf(which,x.id)-1]++); return {cards,counts:c}; }
+  function renderTablePicks(){ const root=$('tablePicks'); root.innerHTML=''; for(let n=1;n<=12;n++){const label=document.createElement('label');label.className='pick';label.innerHTML=`<input type="checkbox" name="table" value="${n}" ${n>=2&&n<=10?'checked':''}><span>${n}</span>`;root.appendChild(label);} root.addEventListener('change',()=>{if(subject==='multiplications') renderHome();}); }
+  function renderHome(){
+    const data=counts(subject); const obj=state[subject];
+    $('subjectHeading').textContent=subject==='multiplications'?'Les multiplications':'La conjugaison au présent';
+    $('subjectDescription').textContent=subject==='multiplications'?'Entraîne-toi sur les tables que tu choisis.':'Conjugue des verbes réguliers et irréguliers au présent de l’indicatif.';
+    $('mulSettings').classList.toggle('hidden',subject!=='multiplications');
+    $('totalCount').textContent=data.cards.length;
+    $('box1Count').textContent=data.counts[0]; $('box2Count').textContent=data.counts[1]; $('box3Count').textContent=data.counts[2];
+    $('masteredCount').textContent=data.counts[2]; $('sessionCount').textContent=obj.sessions;
+    $('sessionBadge').textContent=obj.sessions===0?'Première séance':`${obj.sessions} séance${obj.sessions>1?'s':''} terminée${obj.sessions>1?'s':''}`;
+    const btn=$('startBtn'); btn.disabled=data.cards.length===0;
+    btn.textContent=data.cards.length===0?'Choisis au moins une table':'Commencer une séance →';
+    $('dueHint').textContent=subject==='multiplications'?'Les tables cochées seront incluses dans les révisions.':'Toutes les personnes et les verbes sont inclus dans les révisions.';
+  }
+  function activateSubject(which){ if(session && !confirm('Quitter la séance en cours ? Les réponses déjà données sont conservées.')) return; session=null; subject=which; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.subject===which)); $('homePanel').classList.remove('hidden'); $('sessionPanel').classList.add('hidden'); $('endPanel').classList.add('hidden'); renderHome(); }
+  function pickDue(cards,which,limit){
+    const nextSession=state[which].sessions+1;
+    const groups={1:[],2:[],3:[]};
+    cards.forEach(c=>groups[stageOf(which,c.id)].push(c));
+    const due={1:shuffle(groups[1]),2:nextSession%2===0?shuffle(groups[2]):[],3:nextSession%3===0?shuffle(groups[3]):[]};
+    const chosen=[];
+    // Reserve a little space for higher boxes when they are due, so they are not crowded out by box 1.
+    const target3=due[3].length?Math.max(1,Math.floor(limit*.25)):0;
+    const target2=due[2].length?Math.max(1,Math.floor(limit*.30)):0;
+    chosen.push(...due[3].splice(0,target3));
+    chosen.push(...due[2].splice(0,target2));
+    chosen.push(...due[1].splice(0,Math.max(0,limit-chosen.length)));
+    if(chosen.length<limit) chosen.push(...due[2].splice(0,limit-chosen.length));
+    if(chosen.length<limit) chosen.push(...due[3].splice(0,limit-chosen.length));
+    // If there are not enough cards due at the current interval, fill from the lowest boxes available.
+    if(chosen.length<limit){ for(const level of [1,2,3]){ const remaining=shuffle(groups[level].filter(c=>!chosen.some(p=>p.id===c.id))); chosen.push(...remaining.slice(0,limit-chosen.length)); if(chosen.length>=limit) break; } }
+    return shuffle(chosen).slice(0,limit);
+  }
+  function startSession(){
+    const cards=allCards(subject); if(!cards.length){alert('Choisis au moins une table pour commencer.');return;}
+    const limit=Number($('questionCount').value)||10; const picked=pickDue(cards,subject,limit);
+    if(!picked.length){alert('Aucune carte à proposer pour le moment.');return;}
+    session={which:subject,cards:picked,correct:0,wrong:0}; sessionIndex=0; currentAnswered=false; pendingScore={good:0,wrong:0};
+    $('homePanel').classList.add('hidden');$('endPanel').classList.add('hidden');$('sessionPanel').classList.remove('hidden'); $('sessionSubject').textContent=subject==='multiplications'?'MULTIPLICATIONS':'CONJUGAISON · PRÉSENT'; $('sessionTitle').textContent='À toi de jouer !';
+    showQuestion();
+  }
+  function normalize(s){return String(s).toLocaleLowerCase('fr-FR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’']/g,'').replace(/[^a-z0-9]/g,'').trim();}
+  function showQuestion(){
+    const card=session.cards[sessionIndex]; currentAnswered=false; currentResult=null;
+    $('questionCounter').textContent=`Question ${sessionIndex+1} / ${session.cards.length}`;
+    $('progressFill').style.width=`${(sessionIndex/session.cards.length)*100}%`;
+    $('questionTag').textContent=`BOÎTE ${stageOf(session.which,card.id)}`;
+    $('questionText').textContent=card.kind==='mul'?card.prompt:`${card.prompt}`;
+    $('questionSub').textContent=card.kind==='mul'?card.sub:`${card.sub} · ${card.group}`;
+    $('answerInput').value=''; $('answerInput').placeholder=card.kind==='mul'?'Le résultat…':'La forme du verbe…'; $('answerInput').disabled=false;
+    $('checkBtn').disabled=false;$('checkBtn').classList.remove('hidden');$('feedback').className='feedback hidden';$('feedback').textContent='';$('nextBtn').classList.add('hidden');$('answerForm').classList.remove('hidden');
+    if(card.kind==='verb') $('questionText').style.fontSize='clamp(32px,6vw,46px)'; else $('questionText').style.fontSize='clamp(33px,7vw,52px)';
+    $('answerInput').focus();
+  }
+  function answerQuestion(value){
+    if(!session||currentAnswered)return;
+    const card=session.cards[sessionIndex]; const answerList=card.answers||[card.answer];
+    const ok=answerList.some(a=>normalize(a)===normalize(value)); currentAnswered=true; currentResult=ok;
+    const old=stageOf(session.which,card.id); const next=ok?Math.min(3,old+1):1; state[session.which].progress[card.id]=next; saveState();
+    if(ok){session.correct++; $('feedback').className='feedback good';$('feedback').textContent=old===3?'Bravo ! Bonne réponse : la carte reste dans la boîte 3.':`Bravo, bonne réponse ! La carte passe dans la boîte ${next}.`;}
+    else {session.wrong++; const answerText=answerList.join(' / '); $('feedback').className='feedback bad';$('feedback').textContent=`Pas tout à fait. La bonne réponse était : ${answerText}. La carte retourne dans la boîte 1.`;}
+    $('feedback').classList.remove('hidden');$('answerInput').disabled=true;$('checkBtn').disabled=true;$('nextBtn').classList.remove('hidden');$('nextBtn').textContent=sessionIndex===session.cards.length-1?'Voir mon bilan →':'Question suivante →';$('progressFill').style.width=`${((sessionIndex+1)/session.cards.length)*100}%`;
+  }
+  function nextQuestion(){ if(!session||!currentAnswered)return; sessionIndex++; if(sessionIndex>=session.cards.length){finishSession();return;} showQuestion(); }
+  function finishSession(){
+    const finished=session; state[finished.which].sessions++; saveState(); session=null;
+    $('sessionPanel').classList.add('hidden');$('endPanel').classList.remove('hidden'); $('endEmoji').textContent=finished.wrong===0?'🏆':finished.correct>=finished.wrong?'🎉':'🌱';$('endTitle').textContent=finished.wrong===0?'Parfait, tout juste !':'Bravo, séance terminée !';
+    $('endText').textContent=`Tu as répondu à ${finished.cards.length} question${finished.cards.length>1?'s':''}. Les cartes ont été rangées dans les boîtes selon tes réponses.`;
+    $('scoreGood').textContent=finished.correct; $('scoreWrong').textContent=finished.wrong; $('scoreRate').textContent=`${Math.round(finished.correct/finished.cards.length*100)} %`;
+    $('backBtn').focus();
+  }
+  function backHome(){ $('endPanel').classList.add('hidden');$('sessionPanel').classList.add('hidden');$('homePanel').classList.remove('hidden');renderHome(); }
+  function quitSession(){ if(confirm('Quitter cette séance ? Les cartes déjà corrigées restent enregistrées.')){session=null;backHome();} }
+  function exportData(){const payload={...state,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ma-sauvegarde-revisions.json';a.click();URL.revokeObjectURL(url);}
+  function importData(file){const reader=new FileReader();reader.onload=()=>{try{const obj=JSON.parse(reader.result);if(obj.version!==1||!obj.multiplication||!obj.conjugaison)throw new Error('format');if(!confirm('Importer cette sauvegarde et remplacer les progrès enregistrés sur cet appareil ?'))return;state={version:1,multiplication:{progress:obj.multiplication.progress||{},sessions:Number(obj.multiplication.sessions)||0},conjugaison:{progress:obj.conjugaison.progress||{},sessions:Number(obj.conjugaison.sessions)||0}};saveState();renderHome();alert('Sauvegarde importée.');}catch(e){alert('Ce fichier ne semble pas être une sauvegarde valide de cette application.');}};reader.readAsText(file);}
+
+  renderTablePicks();
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>activateSubject(b.dataset.subject)));
+  $('startBtn').addEventListener('click',startSession);
+  $('answerForm').addEventListener('submit',e=>{e.preventDefault();answerQuestion($('answerInput').value);});
+  $('nextBtn').addEventListener('click',nextQuestion);$('quitBtn').addEventListener('click',quitSession);$('backBtn').addEventListener('click',backHome);
+  $('exportBtn').addEventListener('click',exportData);$('importBtn').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',e=>{if(e.target.files&&e.target.files[0])importData(e.target.files[0]);e.target.value='';});
+  $('resetBtn').addEventListener('click',()=>{if(confirm('Effacer toutes les boîtes et remettre les deux matières à zéro ? Cette action est irréversible sans sauvegarde.')){state=defaultState();saveState();renderHome();alert('Les boîtes sont reparties à zéro.');}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&session){/* avoid accidental loss; use the visible button instead */}});
+  renderHome();
+})();
+</script>
+</body>
+</html>
