@@ -160,7 +160,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
     ['cueillir','3e groupe / irrégulier',['cueille','cueilles','cueille','cueillons','cueillez','cueillent']],
     ['battre','3e groupe / irrégulier',['bats','bats','bat','battons','battez','battent']]
   ];
-  const defaultState = () => ({version:1, multiplication:{progress:{},sessions:0}, conjugaison:{progress:{},sessions:0}});
+  const defaultState = () => ({version:1, multiplications:{progress:{},sessions:0}, conjugaison:{progress:{},sessions:0}});
   let state = loadState();
   let subject = 'multiplications';
   let session = null;
@@ -170,10 +170,25 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
   let pendingScore = {good:0,wrong:0};
   const $ = id => document.getElementById(id);
 
-  function loadState(){ try { const v=JSON.parse(localStorage.getItem(STORAGE_KEY)); if(v && v.version===1) return {...defaultState(),...v,multiplication:{...defaultState().multiplication,...v.multiplication},conjugaison:{...defaultState().conjugaison,...v.conjugaison}}; } catch(e){} return defaultState(); }
+  function loadState(){
+    try {
+      const v=JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if(v && v.version===1){
+        // Compatibilité avec une ancienne sauvegarde qui utilisait « multiplication » au singulier.
+        const mul=v.multiplications || v.multiplication || {};
+        return {
+          version:1,
+          multiplications:{progress:mul.progress && typeof mul.progress==='object'?mul.progress:{},sessions:Number(mul.sessions)||0},
+          conjugaison:{progress:v.conjugaison && v.conjugaison.progress && typeof v.conjugaison.progress==='object'?v.conjugaison.progress:{},sessions:Number(v.conjugaison && v.conjugaison.sessions)||0}
+        };
+      }
+    } catch(e){}
+    return defaultState();
+  }
   function saveState(){ try { localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); } catch(e){ alert('Impossible d’enregistrer les progrès dans ce navigateur. Pense à exporter une sauvegarde.'); } }
   function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-  function tableSelection(){ return [...document.querySelectorAll('input[name="table"]:checked')].map(x=>Number(x.value)); }
+  function normalizeSubject(which){ return which==='conjugaison' ? 'conjugaison' : 'multiplications'; }
+  function tableSelection(){ return [...document.querySelectorAll('input[name="table"]:checked')].map(x=>Number(x.value)).filter(n=>Number.isInteger(n)&&n>=1&&n<=12); }
   function allCards(which){
     if(which==='multiplications'){ const selected=tableSelection(); const cards=[]; selected.forEach(a=>{for(let b=1;b<=12;b++){const id=`${a}x${b}`;cards.push({id,kind:'mul',a,b,answer:String(a*b),answers:[String(a*b)],prompt:`${a} × ${b} = ?`,sub:'Écris le résultat du calcul.'});}}); return cards; }
     return verbs.flatMap((v,vi)=>v[2].map((forms,pi)=>{const answers=forms.split('|');return {id:`${vi}:${pi}`,kind:'verb',verb:v[0],group:v[1],person:people[pi],answer:answers[0],answers,prompt:v[0],sub:`Conjugue au présent avec « ${people[pi]} ». Écris seulement la forme du verbe.`};}));
@@ -182,6 +197,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
   function counts(which){ const cards=allCards(which); const c=[0,0,0]; cards.forEach(x=>c[stageOf(which,x.id)-1]++); return {cards,counts:c}; }
   function renderTablePicks(){ const root=$('tablePicks'); root.innerHTML=''; for(let n=1;n<=12;n++){const label=document.createElement('label');label.className='pick';label.innerHTML=`<input type="checkbox" name="table" value="${n}" ${n>=2&&n<=10?'checked':''}><span>${n}</span>`;root.appendChild(label);} root.addEventListener('change',()=>{if(subject==='multiplications') renderHome();}); }
   function renderHome(){
+    subject=normalizeSubject(subject);
     const data=counts(subject); const obj=state[subject];
     $('subjectHeading').textContent=subject==='multiplications'?'Les multiplications':'La conjugaison au présent';
     $('subjectDescription').textContent=subject==='multiplications'?'Entraîne-toi sur les tables que tu choisis.':'Conjugue des verbes réguliers et irréguliers au présent de l’indicatif.';
@@ -190,11 +206,13 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
     $('box1Count').textContent=data.counts[0]; $('box2Count').textContent=data.counts[1]; $('box3Count').textContent=data.counts[2];
     $('masteredCount').textContent=data.counts[2]; $('sessionCount').textContent=obj.sessions;
     $('sessionBadge').textContent=obj.sessions===0?'Première séance':`${obj.sessions} séance${obj.sessions>1?'s':''} terminée${obj.sessions>1?'s':''}`;
-    const btn=$('startBtn'); btn.disabled=data.cards.length===0;
+    const btn=$('startBtn');
+    // Keep the button clickable even when no table is selected, so the child gets a clear explanation.
+    btn.disabled=false;
     btn.textContent=data.cards.length===0?'Choisis au moins une table':'Commencer une séance →';
     $('dueHint').textContent=subject==='multiplications'?'Les tables cochées seront incluses dans les révisions.':'Toutes les personnes et les verbes sont inclus dans les révisions.';
   }
-  function activateSubject(which){ if(session && !confirm('Quitter la séance en cours ? Les réponses déjà données sont conservées.')) return; session=null; subject=which; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.subject===which)); $('homePanel').classList.remove('hidden'); $('sessionPanel').classList.add('hidden'); $('endPanel').classList.add('hidden'); renderHome(); }
+  function activateSubject(which){ if(session && !confirm('Quitter la séance en cours ? Les réponses déjà données sont conservées.')) return; session=null; subject=normalizeSubject(which); document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',normalizeSubject(b.dataset.subject)===subject)); $('homePanel').classList.remove('hidden'); $('sessionPanel').classList.add('hidden'); $('endPanel').classList.add('hidden'); renderHome(); }
   function pickDue(cards,which,limit){
     const nextSession=state[which].sessions+1;
     const groups={1:[],2:[],3:[]};
@@ -214,12 +232,25 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
     return shuffle(chosen).slice(0,limit);
   }
   function startSession(){
-    const cards=allCards(subject); if(!cards.length){alert('Choisis au moins une table pour commencer.');return;}
-    const limit=Number($('questionCount').value)||10; const picked=pickDue(cards,subject,limit);
-    if(!picked.length){alert('Aucune carte à proposer pour le moment.');return;}
-    session={which:subject,cards:picked,correct:0,wrong:0}; sessionIndex=0; currentAnswered=false; pendingScore={good:0,wrong:0};
-    $('homePanel').classList.add('hidden');$('endPanel').classList.add('hidden');$('sessionPanel').classList.remove('hidden'); $('sessionSubject').textContent=subject==='multiplications'?'MULTIPLICATIONS':'CONJUGAISON · PRÉSENT'; $('sessionTitle').textContent='À toi de jouer !';
-    showQuestion();
+    try {
+      // Read the active tab as the source of truth, and accept the older singular key too.
+      const activeTab=document.querySelector('.tab.active');
+      subject=normalizeSubject(activeTab ? activeTab.dataset.subject : subject);
+      const cards=allCards(subject);
+      if(!cards.length){
+        alert(subject==='multiplications' ? 'Coche au moins une table de multiplication pour commencer.' : 'Aucune carte disponible pour le moment.');
+        return;
+      }
+      const limit=Number($('questionCount').value)||10;
+      const picked=pickDue(cards,subject,Math.min(limit,cards.length));
+      if(!picked.length){alert('Aucune carte à proposer pour le moment. Réessaie ou recharge la page.');return;}
+      session={which:subject,cards:picked,correct:0,wrong:0}; sessionIndex=0; currentAnswered=false; pendingScore={good:0,wrong:0};
+      $('homePanel').classList.add('hidden');$('endPanel').classList.add('hidden');$('sessionPanel').classList.remove('hidden'); $('sessionSubject').textContent=subject==='multiplications'?'MULTIPLICATIONS':'CONJUGAISON · PRÉSENT'; $('sessionTitle').textContent='À toi de jouer !';
+      showQuestion();
+    } catch(error) {
+      console.error('Erreur au démarrage de la séance :',error);
+      alert('Oups, la séance n’a pas pu démarrer. Recharge la page et réessaie. Si le problème persiste, envoie-moi une capture de l’écran.');
+    }
   }
   function normalize(s){return String(s).toLocaleLowerCase('fr-FR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’']/g,'').replace(/[^a-z0-9]/g,'').trim();}
   function showQuestion(){
@@ -254,7 +285,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,inpu
   function backHome(){ $('endPanel').classList.add('hidden');$('sessionPanel').classList.add('hidden');$('homePanel').classList.remove('hidden');renderHome(); }
   function quitSession(){ if(confirm('Quitter cette séance ? Les cartes déjà corrigées restent enregistrées.')){session=null;backHome();} }
   function exportData(){const payload={...state,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ma-sauvegarde-revisions.json';a.click();URL.revokeObjectURL(url);}
-  function importData(file){const reader=new FileReader();reader.onload=()=>{try{const obj=JSON.parse(reader.result);if(obj.version!==1||!obj.multiplication||!obj.conjugaison)throw new Error('format');if(!confirm('Importer cette sauvegarde et remplacer les progrès enregistrés sur cet appareil ?'))return;state={version:1,multiplication:{progress:obj.multiplication.progress||{},sessions:Number(obj.multiplication.sessions)||0},conjugaison:{progress:obj.conjugaison.progress||{},sessions:Number(obj.conjugaison.sessions)||0}};saveState();renderHome();alert('Sauvegarde importée.');}catch(e){alert('Ce fichier ne semble pas être une sauvegarde valide de cette application.');}};reader.readAsText(file);}
+  function importData(file){const reader=new FileReader();reader.onload=()=>{try{const obj=JSON.parse(reader.result);const mul=obj.multiplications||obj.multiplication;if(obj.version!==1||!mul||!obj.conjugaison)throw new Error('format');if(!confirm('Importer cette sauvegarde et remplacer les progrès enregistrés sur cet appareil ?'))return;state={version:1,multiplications:{progress:mul.progress||{},sessions:Number(mul.sessions)||0},conjugaison:{progress:obj.conjugaison.progress||{},sessions:Number(obj.conjugaison.sessions)||0}};saveState();renderHome();alert('Sauvegarde importée.');}catch(e){alert('Ce fichier ne semble pas être une sauvegarde valide de cette application.');}};reader.readAsText(file);}
 
   renderTablePicks();
   document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>activateSubject(b.dataset.subject)));
